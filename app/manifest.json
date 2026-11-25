@@ -1,0 +1,24 @@
+{
+  "name": "AlcoSafe — Stima Tasso Alcolemico",
+  "short_name": "AlcoSafe",
+  "description": "Stima indicativa del tasso alcolemico basata sulle tabelle ufficiali del Ministero della Salute italiano, con conto alla rovescia per la guida sicura. 100% offline e privato sul tuo dispositivo.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0b1120",
+  "theme_color": "#0b1120",
+  "orientation": "portrait",
+  "lang": "it",
+  "icons": [
+    {
+      "src": "./icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

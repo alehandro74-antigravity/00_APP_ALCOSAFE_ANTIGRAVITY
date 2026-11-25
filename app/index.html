@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b1120" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>AlcoSafe — Stima Tasso Alcolemico</title>
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" type="image/png" href="./icon.png" />
+  <link rel="apple-touch-icon" href="./icon.png" />
+  <link rel="stylesheet" href="./css/style.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <img src="./icon.png" alt="AlcoSafe" class="brand-logo" />
+        <div>
+          <h1>AlcoSafe</h1>
+          <span class="subtitle">Stima Tasso Alcolemico · 100% Privata</span>
+        </div>
+      </div>
+      <button id="btn-open-disclaimer" class="icon-btn" title="Disclaimer e Note Legali" aria-label="Note Legali">ℹ️</button>
+    </header>
+
+    <main class="content">
+      <!-- TAB 1: CALCOLO SERATA -->
+      <section id="tab-calcolo" class="tab-panel active">
+        <!-- Cruscotto Stato Attuale -->
+        <article id="status-card" class="card status-card status-verde">
+          <div class="status-header">
+            <span id="alert-badge" class="badge">VERDE</span>
+            <span id="limit-pill" class="pill">Limite: 0,50 g/L</span>
+          </div>
+          <div class="bac-readout">
+            <div class="bac-value">
+              <span id="bac-number">0,00</span>
+              <span class="bac-unit">g/L</span>
+            </div>
+            <p id="alert-title" class="alert-title">Entro il limite legale stimato</p>
+          </div>
+
+          <div class="countdown-grid">
+            <div class="countdown-box">
+              <span class="cd-label" id="cd-limit-label">Rientro sotto 0,50 g/L</span>
+              <strong id="cd-limit-time" class="cd-value">Pronto</strong>
+              <small id="cd-limit-clock" class="cd-clock">Puoi guidare ora (stima)</small>
+            </div>
+            <div class="countdown-box">
+              <span class="cd-label">Azzeramento (0,00 g/L)</span>
+              <strong id="cd-zero-time" class="cd-value">0 min</strong>
+              <small id="cd-zero-clock" class="cd-clock">Alcol già smaltito</small>
+            </div>
+          </div>
+
+          <div class="metrics-row">
+            <span>Alcol puro: <strong id="total-grams">0,0 g</strong></span>
+            <span>Unità Alcoliche: <strong id="total-units">0,0 UA</strong></span>
+          </div>
+
+          <div id="alert-details" class="alert-details">
+            <p id="alert-message"></p>
+            <ul id="alert-penalties" class="penalties-list"></ul>
+          </div>
+        </article>
+
+        <!-- Sintomi stimati -->
+        <article id="symptoms-card" class="card symptoms-card hidden">
+          <h3>🧠 Effetti frequenti a questo livello (<span id="symptoms-range"></span>)</h3>
+          <p><strong>Sensazioni:</strong> <span id="symptoms-sensations"></span></p>
+          <p><strong>Capacità compromesse:</strong> <span id="symptoms-effects"></span></p>
+        </article>
+
+        <!-- Profilo Rapido -->
+        <article class="card">
+          <div class="card-header-row">
+            <h2>👤 Il tuo profilo</h2>
+            <span id="profile-summary" class="muted-small"></span>
+          </div>
+          <div class="profile-grid">
+            <div class="field">
+              <label>Genere</label>
+              <div class="segmented" id="seg-gender">
+                <button type="button" data-value="UOMO" class="seg-btn active">Uomo</button>
+                <button type="button" data-value="DONNA" class="seg-btn">Donna</button>
+              </div>
+            </div>
+            <div class="field">
+              <label for="input-weight">Peso (kg)</label>
+              <input id="input-weight" type="number" min="35" max="180" step="1" value="75" inputmode="numeric" />
+            </div>
+            <div class="field">
+              <label>Stomaco</label>
+              <div class="segmented" id="seg-stomach">
+                <button type="button" data-value="PIENO" class="seg-btn active">Pieno</button>
+                <button type="button" data-value="VUOTO" class="seg-btn">Vuoto</button>
+              </div>
+            </div>
+            <div class="field toggle-field">
+              <label for="input-novice">Neopatentato / Under 21</label>
+              <label class="switch">
+                <input id="input-novice" type="checkbox" />
+                <span class="slider"></span>
+              </label>
+              <small class="muted-small">Imposta il limite legale a 0,00 g/L</small>
+            </div>
+          </div>
+        </article>
+
+        <!-- Aggiungi Bevanda -->
+        <article class="card">
+          <div class="card-header-row">
+            <h2>🍻 Cosa hai bevuto?</h2>
+            <span class="muted-small">Tabelle Ministeriali</span>
+          </div>
+          <p class="mix-hint">💡 <strong>Cocktail o Mix?</strong> Aggiungi i singoli componenti alcolici (es. 1 Superalcolico).</p>
+          <div id="drink-categories" class="drink-categories"></div>
+        </article>
+
+        <!-- Bevande della sessione -->
+        <article class="card">
+          <div class="card-header-row">
+            <h2>📝 Bevande di questa sessione</h2>
+            <div class="session-actions">
+              <button id="btn-save-session" type="button" class="btn-secondary small" disabled>Salva nello storico</button>
+              <button id="btn-clear-session" type="button" class="btn-danger small" disabled>Svuota</button>
+            </div>
+          </div>
+          <div id="session-list" class="session-list">
+            <p class="empty-state">Nessuna bevanda inserita. Tocca una bevanda qui sopra per iniziare.</p>
+          </div>
+        </article>
+      </section>
+
+      <!-- TAB 2: STORICO & STATISTICHE -->
+      <section id="tab-storico" class="tab-panel">
+        <article class="card">
+          <div class="card-header-row">
+            <h2>📊 Le tue statistiche locali</h2>
+            <span class="pill">Solo sul tuo telefono</span>
+          </div>
+          <div class="stats-grid">
+            <div class="stat-box">
+              <span class="stat-label">Oggi</span>
+              <strong id="stat-today" class="stat-val">0,0 UA</strong>
+            </div>
+            <div class="stat-box">
+              <span class="stat-label">Settimana</span>
+              <strong id="stat-week" class="stat-val">0,0 UA</strong>
+            </div>
+            <div class="stat-box">
+              <span class="stat-label">Mese</span>
+              <strong id="stat-month" class="stat-val">0,0 UA</strong>
+            </div>
+            <div class="stat-box">
+              <span class="stat-label">Giorni Zero Alcol (30gg)</span>
+              <strong id="stat-zero-days" class="stat-val">30</strong>
+            </div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-header-row">
+            <h2>🗂️ Storico sessioni salvate</h2>
+            <div class="session-actions">
+              <button id="btn-export-csv" type="button" class="btn-secondary small">Esporta CSV</button>
+              <button id="btn-clear-history" type="button" class="btn-danger small">Elimina tutto</button>
+            </div>
+          </div>
+          <div id="history-list" class="history-list">
+            <p class="empty-state">Nessuna sessione salvata nello storico.</p>
+          </div>
+        </article>
+      </section>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+      <button type="button" class="nav-btn active" data-tab="tab-calcolo">
+        <span>🧮</span>
+        <span>Calcola</span>
+      </button>
+      <button type="button" class="nav-btn" data-tab="tab-storico">
+        <span>📅</span>
+        <span>Storico</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- MODALE AGGIUNTA BEVANDA -->
+  <div id="drink-modal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-backdrop"></div>
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modal-drink-title">Aggiungi bevanda</h3>
+        <button id="btn-close-drink-modal" class="icon-btn" aria-label="Chiudi">✕</button>
+      </div>
+      <p id="modal-drink-subtitle" class="muted-small"></p>
+
+      <div class="field">
+        <label>Seleziona dose rapida</label>
+        <div class="dose-presets" id="dose-presets">
+          <button type="button" data-mult="0.5" class="preset-btn">½ unità</button>
+          <button type="button" data-mult="1" class="preset-btn active">1 unità</button>
+          <button type="button" data-mult="1.5" class="preset-btn">1,5 unità</button>
+          <button type="button" data-mult="2" class="preset-btn">2 unità</button>
+        </div>
+      </div>
+
+      <div class="profile-grid">
+        <div class="field">
+          <label for="modal-cc">Quantità (cc / ml)</label>
+          <input id="modal-cc" type="number" min="10" max="3000" step="5" inputmode="numeric" />
+        </div>
+        <div class="field">
+          <label for="modal-time">Ora assunzione</label>
+          <input id="modal-time" type="time" />
+        </div>
+      </div>
+
+      <div class="modal-preview">
+        <span>Contributo stimato: <strong id="modal-preview-bac">+0,00 g/L</strong></span>
+      </div>
+
+      <button id="btn-confirm-drink" type="button" class="btn-primary full">Aggiungi alla sessione</button>
+    </div>
+  </div>
+
+  <!-- MODALE DISCLAIMER -->
+  <div id="disclaimer-modal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-backdrop"></div>
+    <div class="modal-card disclaimer-card">
+      <h3>⚠️ Avvertenza e Disclaimer</h3>
+      <div class="disclaimer-body">
+        <p><strong>Accettazione implicita:</strong> l’utilizzo dell’app implica l’accettazione integrale delle seguenti condizioni.</p>
+        <p><strong>Stima indicativa:</strong> AlcoSafe fornisce una stima puramente indicativa del tasso alcolemico basandosi sui dati inseriti e sulle tabelle ufficiali pubblicate in Gazzetta Ufficiale (8 settembre 2008, Serie Generale n. 210, D.L. 117/2007).</p>
+        <p><strong>Limiti della stima:</strong> il valore reale può variare sensibilmente in base a metabolismo, età, stato di salute, farmaci e altri fattori individuali.</p>
+        <p><strong>Nessun valore legale:</strong> l’app non sostituisce l’etilometro né test clinici, non costituisce autorizzazione o incoraggiamento a mettersi alla guida e non ha valore legale. Non esistono livelli di consumo alcolico sicuri al 100% alla guida.</p>
+        <p><strong>Privacy totale:</strong> tutti i dati inseriti restano salvati esclusivamente nella memoria locale del tuo dispositivo.</p>
+      </div>
+      <button id="btn-accept-disclaimer" type="button" class="btn-primary full">Ho capito e accetto</button>
+    </div>
+  </div>
+
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>
