@@ -1,4 +1,4 @@
-const CACHE_NAME = 'alcosafe-v5';
+const CACHE_NAME = 'alcosafe-v6';
 const ASSETS = [
   './',
   './index.html',
